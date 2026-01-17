@@ -1,0 +1,17 @@
+node_modules/
+.DS_Store
+dist/
+.vscode/
+.env
+server/.env
+web/.env
+.env.*
+*.local
+server/service-account.json
+server/node_modules/
+web/node_modules/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
