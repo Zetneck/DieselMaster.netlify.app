@@ -38,9 +38,10 @@ El API queda en `http://localhost:4000`.
    cd web
    npm install
    ```
-2) (Opcional) Crea `.env` con la URL del backend si no es `http://localhost:4000`:
+2) (Opcional) Crea `.env` con la URL del backend si no es `http://localhost:4000` (usa `.env.example` como referencia):
    ```env
-   VITE_API_BASE=http://localhost:4000
+   VITE_API_BASE=https://tu-backend
+   # VITE_API_KEY=solo_si_el_backend_sigue_requiriendo_token
    ```
 
 ### Levantar frontend
@@ -49,6 +50,12 @@ cd web
 npm run dev
 ```
 Vite expone la app en `http://localhost:5173`.
+
+### Despliegue (Netlify u otro hosting estático)
+- Asegura que el backend esté desplegado y accesible públicamente.
+- Define la variable de entorno `VITE_API_BASE` en Netlify apuntando al backend.
+- Si tu backend aún exige API key, define `VITE_API_KEY` en Netlify (o elimina el API key del backend para acceso libre).
+- En Netlify el `netlify.toml` ya compila la carpeta `web/`; no se despliega el backend ahí.
 
 ## API
 - `GET /api/units?date=YYYY-MM-DD` lee Google Sheets y devuelve unidades programadas en la fecha (default: hoy).

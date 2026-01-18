@@ -6,7 +6,10 @@ const authHeaders = API_KEY ? { 'x-api-key': API_KEY } : {};
 async function handleResponse(response) {
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(text || 'Error del servidor');
+    if (response.status === 401) {
+      throw new Error(text || 'No autorizado: configura VITE_API_KEY o elimina API_KEY en el backend.');
+    }
+    throw new Error(text || `Error del servidor (HTTP ${response.status})`);
   }
   return response;
 }
