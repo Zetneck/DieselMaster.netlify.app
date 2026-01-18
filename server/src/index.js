@@ -10,35 +10,8 @@ const { renderImage } = require('./render');
 const app = express();
 const PORT = process.env.PORT || 4000;
 const SHEET_NAME = process.env.SHEET_NAME || 'TIRO MX - IMPO (BRAYAN)';
-const API_KEY = process.env.API_KEY;
-const MAX_UNITS = Number.parseInt(process.env.MAX_UNITS || '500', 10) || 500;
-const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:4173')
-  .split(',')
-  .map((o) => o.trim())
-  .filter(Boolean);
-
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (!ALLOWED_ORIGINS.length || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
-    return callback(new Error('Origen no permitido'), false);
-  }
-};
-
-function requireApiKey(req, res, next) {
-  if (!API_KEY) {
-    return res.status(500).send('API_KEY no configurada en el servidor.');
-  }
-  const provided = req.headers['x-api-key'];
-  if (provided !== API_KEY) {
-    return res.status(401).send('No autorizado.');
-  }
-  return next();
-}
-
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json({ limit: '1mb' }));
-app.use(['/api/units', '/api/render'], requireApiKey);
 
 function ensureEnv() {
   if (!process.env.SPREADSHEET_ID) {
@@ -102,12 +75,6 @@ app.get('/api/units', async (req, res) => {
       diagnostics
     });
 
-    if (units.length > MAX_UNITS) {
-      return res
-        .status(400)
-        .send(`Demasiadas unidades (${units.length}). Reduce el rango o define MAX_UNITS (${MAX_UNITS}).`);
-    }
-
     res.json({
       date,
       startDate: hasRange ? startDate.format('YYYY-MM-DD') : null,
@@ -148,12 +115,6 @@ app.post('/api/render', async (req, res) => {
     if (!Array.isArray(units) || !units.length) {
       return res.status(400).send('No hay unidades para generar la imagen.');
     }
-    if (units.length > MAX_UNITS) {
-      return res
-        .status(400)
-        .send(`Demasiadas unidades (${units.length}). Reduce el rango o define MAX_UNITS (${MAX_UNITS}).`);
-    }
-
     const dateLabel = hasRange
       ? `${rangeStart.format('YYYY-MM-DD')} a ${rangeEnd.format('YYYY-MM-DD')}`
       : targetDate.format('YYYY-MM-DD');
